@@ -1,3 +1,21 @@
+
+## Custom Modifications (Sudharshan's Fork)
+
+This repository includes several custom modifications tailored for specific setups:
+
+1. **Xiaomi TV Boot Fix (MiTV-A Series)**
+   - Added support for Xiaomi's proprietary "Quick Start" boot signal (`mitv.action.STR_BOOT_COMPLETED`). This ensures the app correctly detects when the TV wakes from sleep, preventing the native Xiaomi UI from hijacking the screen.
+   - Enhanced remote key detection to explicitly support `MiTV-A` model remote layouts.
+   
+2. **PatchWall Complete Debloat**
+   - Added `com.mitv.tvhome.atv` (Xiaomi PatchWall) directly to the system debloat array, forcefully disabling the Xiaomi launcher to prevent UI interference on startup.
+
+3. **Skyworth/Motorola Remote Fix**
+   - Added `skyworth` to the `STEM_NETFLIX` global key identifier inside `RemoteKeys.java`. This enables the custom "Remote Buttons" menu configuration on Motorola-branded TVs (which are internally manufactured by Skyworth/Flipkart).
+
+4. **System Performance Dashboard**
+   - Replaced the default Binance Cryptocurrency price ticker with a live System Performance dashboard.
+   - Opening the top drawer now displays real-time RAM (Total/Used) and Storage metrics, visualized with color-coded progress bars (Green < 70% | Orange > 70% | Red > 85%).
 <div align="center">
 
 <img src="docs/assets/icon-512.png" width="96" alt="">

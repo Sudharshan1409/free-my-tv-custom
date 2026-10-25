@@ -1642,7 +1642,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         for (int i = 0; i < drawerItems.size(); i++) if (i != top) drawDrawerTile(c, i);
         if (top >= 0) drawDrawerTile(c, top);
         if (Prefs.weather()) drawWeatherCard(c, weatherCard);
-        if (Prefs.quotes() && HomeData.active().length > 0) drawQuotesCard(c, quotesCard);
+        drawQuotesCard(c, quotesCard);
     }
 
     /** Square drawer button: symbol and name; an input with no device is dimmed. Focused: white, with dark text. */
@@ -1822,27 +1822,50 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void drawPrices(Canvas c, RectF r) {
         float x = r.left + 34 * k, right = r.right - 34 * k;
         refreshDrawerText();
-        c.drawText(Ui.tr("Crypto"), x, r.top + 54 * k, cardTitle);
-        c.drawText(staleText, right, r.top + 54 * k, cardDimRight);
-        float cap = Ui.cap(cardText);
-        int[] coins = HomeData.active();
-        for (int j = 0; j < coins.length; j++) {
-            int i = coins[j];
-            float base = r.top + (110 + 52 * j) * k, mid = base - cap / 2;
-            float gw = Glyphs.width(getContext(), HomeData.COINS[i], cap);
-            Glyphs.coin(getContext(), c, HomeData.COINS[i], x + 14 * k, mid, cap, tone(L_DIM, 0xCCFFFFFF));
-            c.drawText(HomeData.coinName(i), x + Math.max(gw, 28 * k) / 2 + 30 * k, base, cardText);
-            c.drawText(priceText[i], right - 128 * k, base, pricePaint);
-            double change = data.changes[i];
-            if (Double.isNaN(change)) continue;
-            int color = change >= 0 ? tone(0xFF248A3D, UP_COLOR) : tone(0xFFD70015, DOWN_COLOR);
-            tmp.set(right - 108 * k, mid - 17 * k, right, mid + 17 * k);
-            fill.setShader(null);
-            fill.setColor(Ui.alpha(color, 0.2f));
-            c.drawRoundRect(tmp, 17 * k, 17 * k, fill);
-            changePaint.setColor(color);
-            c.drawText(changeText[i], tmp.centerX(), mid + Ui.halfCap(changePaint), changePaint);
-        }
+        c.drawText("System Performance", x, r.top + 54 * k, cardTitle);
+        
+        android.app.ActivityManager am = (android.app.ActivityManager) getContext().getSystemService(android.content.Context.ACTIVITY_SERVICE);
+        android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+        am.getMemoryInfo(mi);
+        long totalRam = mi.totalMem / 1048576L;
+        long availRam = mi.availMem / 1048576L;
+        long usedRam = totalRam - availRam;
+        
+        android.os.StatFs stat = new android.os.StatFs(android.os.Environment.getDataDirectory().getPath());
+        long totalRom = stat.getTotalBytes() / 1048576L;
+        long availRom = stat.getAvailableBytes() / 1048576L;
+        long usedRom = totalRom - availRom;
+        
+        Paint txtRight = new Paint(cardText);
+        txtRight.setTextAlign(Paint.Align.RIGHT);
+        
+        Paint barBg = new Paint(Paint.ANTI_ALIAS_FLAG);
+        barBg.setColor(0x40FFFFFF);
+        Paint barFg = new Paint(Paint.ANTI_ALIAS_FLAG);
+        barFg.setColor(0xFF30D158);
+        
+        float base1 = r.top + 110 * k;
+        c.drawText("RAM (" + totalRam + " MB)", x, base1, cardText);
+        c.drawText(usedRam + " MB Used", right, base1, txtRight);
+        
+        float bar1y = base1 + 20 * k;
+        c.drawRoundRect(x, bar1y, right, bar1y + 12 * k, 6 * k, 6 * k, barBg);
+        float ramPct = totalRam > 0 ? (float)usedRam / totalRam : 0;
+        if(ramPct > 0.85f) barFg.setColor(0xFFFF453A);
+        else if(ramPct > 0.7f) barFg.setColor(0xFFFF9F0A);
+        c.drawRoundRect(x, bar1y, x + ((right - x) * ramPct), bar1y + 12 * k, 6 * k, 6 * k, barFg);
+        
+        float base2 = r.top + 200 * k;
+        c.drawText("Storage (" + (totalRom/1024L) + " GB)", x, base2, cardText);
+        c.drawText(usedRom + " MB Used", right, base2, txtRight);
+        
+        float bar2y = base2 + 20 * k;
+        barFg.setColor(0xFF30D158);
+        c.drawRoundRect(x, bar2y, right, bar2y + 12 * k, 6 * k, 6 * k, barBg);
+        float romPct = totalRom > 0 ? (float)usedRom / totalRom : 0;
+        if(romPct > 0.85f) barFg.setColor(0xFFFF453A);
+        else if(romPct > 0.7f) barFg.setColor(0xFFFF9F0A);
+        c.drawRoundRect(x, bar2y, x + ((right - x) * romPct), bar2y + 12 * k, 6 * k, 6 * k, barFg);
     }
 
     // MARK: - Focus
@@ -2967,7 +2990,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         applyTone();
         if (!picksOn()) {
             drawClock(c);
-            if (HomeData.coinCount() > 0) drawQuotes(c);
+            
             return;
         }
         String hello = Ui.tr("For You");
@@ -3000,7 +3023,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         for (int i = 0; i < 3; i++) if (cardFocus[i].value > 0.02f && (top < 0 || cardFocus[i].value > cardFocus[top].value)) top = i;
         for (int i = 0; i < 3; i++) if (i != top) drawLightCard(c, i);
         if (top >= 0) drawLightCard(c, top);
-        if (HomeData.coinCount() > 0) drawQuotes(c);
+        
     }
 
     private boolean picksOn() {

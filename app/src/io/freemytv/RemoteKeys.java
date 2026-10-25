@@ -42,10 +42,10 @@ final class RemoteKeys {
      */
     static final boolean XIAOMI = is("Xiaomi") && !FORMOVIE && Build.MODEL.startsWith("MiTV-");
     /** Brands whose Netflix button is STEM_1, a global key (MediaTek): only that button is ours. */
-    static final boolean STEM_NETFLIX = VESTEL || FORMOVIE;
+    static final boolean STEM_NETFLIX = VESTEL || FORMOVIE || is("skyworth");
 
     static boolean supported() {
-        return TCL || STEM_NETFLIX || KTC || SONY || XIAOMI || HISENSE;
+        return TCL || STEM_NETFLIX || KTC || SONY || XIAOMI || HISENSE || is("skyworth");
     }
 
     private static boolean is(String maker) {
