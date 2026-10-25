@@ -234,7 +234,7 @@ final class HomeApps {
 
     // MARK: - Top buttons (the round ones at the top right)
 
-    static final String TOP_LIVE = "live", TOP_INPUTS = "inputs", TOP_SETTINGS = "settings", TOP_WIFI = "settings";
+    static final String TOP_LIVE = "live", TOP_INPUTS = "inputs", TOP_SETTINGS = "settings", TOP_WIFI = "wifi";
     static final List<String> TOP_DEFAULT = Collections.unmodifiableList(java.util.Arrays.asList(TOP_WIFI, TOP_LIVE, TOP_INPUTS, TOP_SETTINGS));
     static final int MAX_TOP = TOP_DEFAULT.size();
 
@@ -258,7 +258,7 @@ final class HomeApps {
         switch (key) {
             case TOP_LIVE: return action(LIVE_TV, TOP_LIVE, Ui.tr("light|Live TV"), "live_tv");
             case TOP_INPUTS: return action(INPUTS, TOP_INPUTS, Ui.tr("HDMI Inputs"), "hdmi");
-            case TOP_WIFI: return action(ANDROID_SETTINGS, TOP_WIFI, "Wi-Fi Settings", "settings");
+            case TOP_WIFI: return action(ANDROID_SETTINGS, TOP_WIFI, "Wi-Fi Settings", "wifi");
             default: return action(SETTINGS, TOP_SETTINGS, Ui.tr("light|Settings"), "settings");
         }
     }
